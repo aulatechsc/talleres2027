@@ -14,7 +14,7 @@
     alumnos: [], asig: {}, inscripciones: [], historial: [],
     cambios: [], liquidaciones: [], precios: null,
     q: '', fCurso: '', fEstado: '', fInscr: 'pendiente',
-    modoFin: false, mesSel: null
+    mesSel: null
   };
 
   // ---------- Meses ----------
@@ -111,17 +111,11 @@
     const a = $('#acciones');
     if (S.vista === 'alumnos') {
       a.innerHTML = `
-        <div class="modo" title="En «Fin de mes» los cambios quedan en borrador y se aplican al cerrar ${esc(nomMes(mesAbierto()))}">
-          <button class="${S.modoFin ? '' : 'on'}" data-m="0">Cambio inmediato</button>
-          <button class="${S.modoFin ? 'on fin' : ''}" data-m="1" ${mesCambios() ? '' : 'disabled'}>Fin de mes</button></div>
         <button class="btn btn-sm" id="a-import">⬆ Importar lista</button>
         <button class="btn btn-sm" id="a-add">＋ Alumno</button>
         <button class="btn btn-sm" id="a-exp1">⬇ Por alumno</button>
         <button class="btn btn-sm" id="a-exp2">⬇ Por taller</button>
         ${demo ? `<button class="btn btn-sm demo" id="a-demo">🎲 Datos de prueba</button><button class="btn btn-sm demo" id="a-reset">Reiniciar</button>` : ''}`;
-      a.querySelectorAll('.modo button').forEach(b => b.onclick = () => {
-        S.modoFin = b.dataset.m === '1'; renderAcciones(); renderBannerModo();
-      });
       $('#a-import').onclick = modalImportar;
       $('#a-add').onclick = () => modalAlumno();
       $('#a-exp1').onclick = exportarPorAlumno;
@@ -133,13 +127,6 @@
       $('#a-proc').onclick = procesarTodas;
       $('#a-expi').onclick = exportarInscripciones;
     } else a.innerHTML = '';
-    renderBannerModo();
-  }
-
-  function renderBannerModo() {
-    const b = $('#banner-modo'); if (!b) return;
-    b.hidden = !(S.vista === 'alumnos' && S.modoFin);
-    b.innerHTML = `<b>Modo fin de mes:</b> lo que cambies queda en borrador y se aplica al cerrar <b>${esc(nomMes(mesAbierto()))}</b> (rige desde ${esc(nomMes(mesCambios()))}). No afecta la facturación de ${esc(nomMes(mesAbierto()))}.`;
   }
 
   function render() {
@@ -218,8 +205,10 @@
     const n = Object.keys(S.asig[a.id] || {}).length;
     row.innerHTML = `<div class="al-info"><div class="al-nom" title="${esc(nombreAl(a))}">${esc(nombreAl(a))}</div>
       <div class="al-meta"><span class="tag">${esc(a.curso)}</span><span class="n ${n ? '' : 'cero'}">${n} taller${n !== 1 ? 'es' : ''}</span>
-      <button class="al-del" title="Quitar alumno de la lista">🗑</button></div></div>`;
+      <button class="al-del" title="Quitar alumno de la lista">🗑</button></div>
+      ${mesCambios() ? `<button class="al-prog ${S.cambios.some(c => c.alumno_id === a.id) ? 'tiene' : ''}" title="Cargar cambios que rigen desde ${esc(nomMes(mesCambios()))}">Programar desde ${esc(nomMes(mesCambios()).slice(0, 3))}.</button>` : ''}</div>`;
     row.querySelector('.al-del').onclick = () => borrarAlumno(a);
+    row.querySelector('.al-prog')?.addEventListener('click', () => modalProgramar(a));
     DIAS.forEach((_, d) => { const c = document.createElement('div'); c.className = 'cell'; row.appendChild(c); pintarCelda(c, a, d); });
     return row;
   }
@@ -270,7 +259,6 @@
   }
 
   async function asignar(cell, a, d, taller, anterior) {
-    if (S.modoFin) return programar(a, d, taller);
     cell.classList.add('loading');
     try {
       await DB.setAsignacion(a.id, d, taller, 'panel');
@@ -283,7 +271,6 @@
   }
 
   async function quitar(cell, a, d) {
-    if (S.modoFin) return programar(a, d, null);
     const prev = S.asig[a.id][d].taller;
     cell.classList.add('loading');
     try {
@@ -297,23 +284,48 @@
   }
 
   // ---------- Cambios programados (borrador hasta fin de mes) ----------
-  async function programar(a, d, tallerNuevo) {
-    const mes = mesCambios();
-    if (!mes) { toast('No hay un mes siguiente para programar el cambio', 'error'); return; }
-    const actual = ((S.asig[a.id] || {})[d] || {}).taller || null;
-    const previo = cambioDe(a.id, d);
-    try {
-      if (previo) { await DB.updateCambio(previo.id, { estado: 'cancelado' }); S.cambios = S.cambios.filter(c => c !== previo); }
-      if ((tallerNuevo || null) === actual) {   // vuelve a quedar como está: no hace falta cambio
-        toast('Cambio programado cancelado', 'ok');
-      } else {
-        const c = await DB.addCambio({ nivel: S.nivel, alumno_id: a.id, dia: d, taller_anterior: actual, taller_nuevo: tallerNuevo, mes_aplica: mes });
-        S.cambios.push(c);
-        await DB.log({ nivel: S.nivel, alumno_id: a.id, alumno: nombreAl(a), accion: 'programar', dia: d, taller_anterior: actual, taller_nuevo: (tallerNuevo || 'quitar') + ' (desde ' + nomMes(mes) + ')' });
-        toast(`Programado para ${nomMes(mes)}: ${DIAS[d]} ${tallerNuevo ? '→ ' + tallerNuevo : 'se quita ' + actual}`, 'ok');
-      }
-    } catch (e) { toast('Error: ' + e.message, 'error'); }
-    refrescarFila(a);
+  function modalProgramar(a) {
+    const mes = mesCambios(), actualMes = mesAbierto();
+    if (!mes) { toast('No hay un mes siguiente para programar', 'error'); return; }
+    const filas = DIAS.map((dia, d) => {
+      const actual = ((S.asig[a.id] || {})[d] || {}).taller || '';
+      const cam = cambioDe(a.id, d);
+      const prox = cam ? (cam.taller_nuevo || '') : actual;
+      const opts = window.talleresPosibles(S.nivel, a.curso, d);
+      const lista = actual && !opts.includes(actual) ? [actual, ...opts] : opts;
+      const sel = lista.length
+        ? `<select class="input p-sel" data-d="${d}" data-actual="${esc(actual)}"><option value="">${actual ? 'Quitar (sin taller)' : '— sin taller —'}</option>
+            ${lista.map(t => `<option ${t === prox ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`
+        : `<span class="p-na">Sin talleres este día</span>`;
+      return `<tr class="${prox !== actual ? 'cambia' : ''}"><td class="p-dia">${dia}</td><td class="p-act">${actual ? esc(actual) : '—'}</td><td>${sel}</td></tr>`;
+    }).join('');
+    modal(`<h2>${esc(nombreAl(a))} <span class="tag">${esc(a.curso)}</span></h2>
+      <p class="modal-sub">Cambios desde <b>${esc(nomMes(mes))}</b>. Quedan en borrador y se aplican al cerrar ${esc(nomMes(actualMes))}; la facturación de ${esc(nomMes(actualMes))} no cambia.</p>
+      <table class="prog"><thead><tr><th>Día</th><th>Ahora (${esc(nomMes(actualMes))})</th><th>Desde ${esc(nomMes(mes))}</th></tr></thead><tbody>${filas}</tbody></table>
+      <p class="modal-err" id="m-err"></p>
+      <div class="modal-actions"><button class="btn" data-close>Cancelar</button><button class="btn btn-red" id="m-ok">Guardar borrador</button></div>`,
+      (box, close) => {
+        box.querySelectorAll('.p-sel').forEach(sl => sl.onchange = () => sl.closest('tr').classList.toggle('cambia', sl.value !== sl.dataset.actual));
+        $('#m-ok', box).onclick = async () => {
+          $('#m-ok', box).disabled = true;
+          let n = 0;
+          try {
+            for (const sl of box.querySelectorAll('.p-sel')) {
+              const d = +sl.dataset.d, actual = sl.dataset.actual || null, nuevo = sl.value || null;
+              const previo = cambioDe(a.id, d);
+              if (previo && (previo.taller_nuevo || null) === nuevo) { if (nuevo !== actual) n++; continue; }   // sin cambios
+              if (previo) { await DB.updateCambio(previo.id, { estado: 'cancelado' }); S.cambios = S.cambios.filter(c => c !== previo); }
+              if (nuevo === actual) continue;
+              const c = await DB.addCambio({ nivel: S.nivel, alumno_id: a.id, dia: d, taller_anterior: actual, taller_nuevo: nuevo, mes_aplica: mes });
+              S.cambios.push(c); n++;
+              await DB.log({ nivel: S.nivel, alumno_id: a.id, alumno: nombreAl(a), accion: 'programar', dia: d, taller_anterior: actual, taller_nuevo: (nuevo || 'quitar') + ' (desde ' + nomMes(mes) + ')' });
+            }
+            close();
+            toast(n ? `${n} cambio${n > 1 ? 's' : ''} programado${n > 1 ? 's' : ''} desde ${nomMes(mes)}` : 'Sin cambios programados', 'ok');
+          } catch (e) { $('#m-err', box).textContent = e.message; $('#m-ok', box).disabled = false; return; }
+          refrescarFila(a);
+        };
+      });
   }
 
   async function cancelarCambio(c, a) {
@@ -669,7 +681,7 @@
           ${cambiosProx.map(c => { const a = alumnoById(c.alumno_id); return a ? `<tr><td>${esc(nombreAl(a))}</td><td><span class="tag">${esc(a.curso)}</span></td><td>${DIAS[c.dia]}</td>
             <td>${esc(((S.asig[a.id] || {})[c.dia] || {}).taller || '—')}</td><td><b>${c.taller_nuevo ? esc(c.taller_nuevo) : 'Se quita'}</b></td><td class="mono">${esc(c.usuario || '')}</td>
             <td><button class="btn btn-sm c-cancel" data-id="${c.id}">Cancelar</button></td></tr>` : ''; }).join('')}</tbody></table>` :
-          `<p class="mini">Para cargar uno, en <b>Alumnos</b> activá «Fin de mes» y hacé el cambio.</p>`}</div>` : ''}
+          `<p class="mini">Para cargar uno, en <b>Alumnos</b> usá «Programar desde ${esc(nomMes(prox).slice(0, 3))}.» en la fila del alumno.</p>`}</div>` : ''}
       <div class="fac-tabla"><table class="tb"><thead><tr><th>Curso</th><th>Alumno</th><th>Talleres</th><th class="r">Cant.</th><th class="r">Escala</th>${aparte.length ? '<th class="r">' + esc(aparte.join(' / ')) + '</th>' : ''}<th class="r">Total</th></tr></thead><tbody>
         ${filas.map(f => `<tr><td><span class="tag">${esc(f.curso)}</span></td><td>${esc(f.apellido)}, ${esc(f.nombre)}</td><td class="det">${esc(f.detalle)}</td>
           <td class="r">${f.cantidad}</td><td class="r mono">${fmt$(f.monto_escala)}</td>${aparte.length ? `<td class="r mono">${f.monto_aparte ? fmt$(f.monto_aparte) : ''}</td>` : ''}<td class="r tot">${fmt$(f.total)}</td></tr>`).join('') ||
@@ -740,7 +752,7 @@
       }
       spin(false);
       toast(`${NomMes(m)} cerrado${ok ? ` · ${ok} cambios aplicados` : ''}`, 'ok');
-      S.mesSel = m; S.modoFin = false;
+      S.mesSel = m;
       exportarFacturacion(m, filas, P);
     } catch (e) { spin(false); toast('Error: ' + e.message, 'error'); }
     await cargar();

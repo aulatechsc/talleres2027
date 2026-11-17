@@ -31,7 +31,7 @@ La familia elige el curso y busca al alumno/a por apellido (mínimo 3 letras, ha
 - El mes abierto es un **borrador** que se actualiza solo. **Cerrar mes** guarda la foto (no cambia más), descarga el CSV para Administración y aplica los cambios programados.
 
 ## Cambios a fin de mes
-En **Alumnos**, el interruptor «Fin de mes» hace que cada cambio quede en borrador (recuadro rojo punteado en la grilla) sin tocar la facturación del mes en curso. Se aplican al cerrar el mes; se pueden cancelar desde la grilla o desde Facturación.
+En **Alumnos**, cada fila tiene «Programar desde …»: abre la semana del alumno con «Ahora» y «Desde el mes siguiente» lado a lado. Lo que cambies queda en borrador (recuadro rojo punteado en la grilla) sin tocar la facturación del mes en curso. Se aplican al cerrar el mes; se pueden cancelar desde la grilla o desde Facturación.
 
 ## Acceso al panel
 Link por email, solo para los emails cargados en la tabla `staff`:

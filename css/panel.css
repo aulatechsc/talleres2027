@@ -116,7 +116,7 @@ table.res td.tot { background: var(--azul); color: #fff; }
 
 .modal-backdrop { position: fixed; inset: 0; background: rgba(0,71,108,.45);  z-index: 200; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .modal-backdrop.open { opacity: 1; pointer-events: all; }
-.modal { background: var(--surface); border-radius: 14px; padding: 24px; width: 460px; max-width: 94vw; max-height: 90vh; overflow: auto;  }
+.modal { background: var(--surface); border-radius: 14px; padding: 24px; width: 560px; max-width: 94vw; max-height: 90vh; overflow: auto;  }
 .modal h2 { font-size: 17px; margin-bottom: 4px; }
 .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
@@ -135,13 +135,7 @@ table.res td.tot { background: var(--azul); color: #fff; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin-text { font-size: 13px; color: var(--muted); }
 
-/* --- modo fin de mes / borradores --- */
-.modo { display: inline-flex; border: 1.5px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-right: 6px; }
-.modo button { font: inherit; font-size: 12px; font-weight: 600; color: var(--muted); background: var(--blanco); border: none; padding: 7px 11px; cursor: pointer; }
-.modo button.on { background: var(--azul); color: var(--blanco); }
-.modo button.on.fin { background: var(--rojo); }
-.modo button:disabled { opacity: .4; cursor: default; }
-.banner-modo { background: var(--rojo); color: var(--blanco); font-size: 13px; padding: 9px 20px; }
+/* --- cambios programados --- */
 .cell { display: grid; gap: 3px; }
 .borrador { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--rojo); border: 1.5px dashed var(--rojo); background: var(--blanco); border-radius: 6px; padding: 2px 4px 2px 7px; }
 .borrador span { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -184,3 +178,16 @@ table.tb td.tot { font-weight: 700; }
 table.tb tfoot td { font-weight: 700; background: var(--celeste-lt); border: none; padding: 12px; }
 .fac-cambios .mini { font-size: 13px; color: var(--muted); }
 .login-card .input { text-align: center; }
+
+.al-prog { margin-top: 5px; font: inherit; font-size: 12px; font-weight: 500; color: var(--azul); background: var(--blanco); border: 1.5px solid var(--border); border-radius: 999px; padding: 2px 10px; cursor: pointer; }
+.al-prog:hover { border-color: var(--azul); }
+.al-prog.tiene { color: var(--rojo); border-color: var(--rojo); border-style: dashed; }
+table.prog { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.prog th { text-align: left; font-size: 12px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1.5px solid var(--border); }
+table.prog td { padding: 6px 8px; border-bottom: 1px solid var(--celeste-lt); }
+table.prog .p-dia { font-weight: 700; width: 90px; }
+table.prog .p-act { color: var(--muted); }
+table.prog select { padding: 7px 10px; font-size: 13px; }
+table.prog tr.cambia select { border-color: var(--rojo); color: var(--rojo); font-weight: 600; background-color: var(--blanco); }
+.p-na { font-size: 13px; color: var(--muted); }
+.modal h2 .tag { font-size: 11px; margin-left: 6px; }
