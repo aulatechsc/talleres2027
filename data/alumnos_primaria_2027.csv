@@ -1,0 +1,324 @@
+curso,apellido,nombre
+1° Arrayán,Arias,Delfina
+1° Arrayán,Arias,Victoria
+1° Arrayán,Castillo,Facundo
+1° Arrayán,Fernández,Valentín
+1° Arrayán,Ferrari,Facundo
+1° Arrayán,Ferreyra,Pedro
+1° Arrayán,Flores,Emma
+1° Arrayán,Gutiérrez,Nicolás
+1° Arrayán,Juárez,Emma
+1° Arrayán,Martínez,Paloma
+1° Arrayán,Núñez,Emma
+1° Arrayán,Peralta,Olivia
+1° Arrayán,Peralta,Renata Gael
+1° Arrayán,Pérez,Pedro Felipe
+1° Arrayán,Ramírez,Emma
+1° Arrayán,Romero,Pedro
+1° Arrayán,Sosa,Guadalupe
+1° Arrayán,Sosa,Valentina
+1° Arrayán,Suárez,Felipe
+1° Arrayán,Sánchez,Emilia
+1° Arrayán,Álvarez,Valentín
+1° Jacarandá,Bianchi,Facundo
+1° Jacarandá,Díaz,Agustina Julieta
+1° Jacarandá,Fernández,Martina
+1° Jacarandá,Ferreyra,Lisandro
+1° Jacarandá,Ferreyra,Ramiro
+1° Jacarandá,García,Lucía Francisco
+1° Jacarandá,Godoy,Bruno
+1° Jacarandá,Martínez,Nicolás
+1° Jacarandá,Morales,Renata
+1° Jacarandá,Moreno,Lisandro
+1° Jacarandá,Ojeda,Guadalupe Renata
+1° Jacarandá,Paz,Juan Cruz
+1° Jacarandá,Peralta,Lorenzo
+1° Jacarandá,Rodríguez,Lucía
+1° Jacarandá,Rojas,Pedro
+1° Jacarandá,Romero,Milo
+1° Jacarandá,Sánchez,Agustina
+1° Jacarandá,Vázquez,Joaquín
+2° Arrayán,Aguirre,Francisco
+2° Arrayán,Benítez,Francisco
+2° Arrayán,Carrizo,Valentina
+2° Arrayán,Castillo,Tomás
+2° Arrayán,Castro,Tomás Nicolás
+2° Arrayán,Giménez,Ramiro
+2° Arrayán,Godoy,Mía
+2° Arrayán,Gutiérrez,Emma
+2° Arrayán,Gómez,Delfina
+2° Arrayán,Gómez,Olivia
+2° Arrayán,Juárez,Paloma
+2° Arrayán,López,Santino
+2° Arrayán,Navarro,Valentina
+2° Arrayán,Ortiz,Tomás Lola
+2° Arrayán,Pereyra,Juana
+2° Arrayán,Rojas,Santino
+2° Arrayán,Romero,Felipe
+2° Arrayán,Ríos,Lautaro
+2° Arrayán,Sosa,Juana
+2° Arrayán,Torres,Benicio
+2° Arrayán,Vázquez,Bautista
+2° Arrayán,Álvarez,Juan Cruz
+2° Jacarandá,Bianchi,Ema
+2° Jacarandá,Bianchi,Francisco
+2° Jacarandá,Castillo,Valentina
+2° Jacarandá,Ferreyra,Bautista
+2° Jacarandá,García,Paloma
+2° Jacarandá,Giménez,Delfina
+2° Jacarandá,Giménez,Juan Cruz Facundo
+2° Jacarandá,Martínez,Francisco Ignacio
+2° Jacarandá,Molina,Pedro
+2° Jacarandá,Morales,Facundo
+2° Jacarandá,Moreno,Ema
+2° Jacarandá,Núñez,Joaquín
+2° Jacarandá,Núñez,Lisandro
+2° Jacarandá,Núñez,Ramiro
+2° Jacarandá,Ortiz,Lola
+2° Jacarandá,Rodríguez,Ignacio Lucía
+2° Jacarandá,Rodríguez,Valentín
+2° Jacarandá,Romero,Santino
+2° Jacarandá,Sosa,Ignacio
+2° Jacarandá,Vega,Lautaro Sofía
+2° Jacarandá,Vega,Nicolás
+3° Arrayán,Acosta,Alma Ramiro
+3° Arrayán,Acosta,Facundo Benjamín
+3° Arrayán,Acosta,Ignacio Thiago
+3° Arrayán,Aguirre,Josefina
+3° Arrayán,Benítez,Julieta
+3° Arrayán,Fernández,Bautista
+3° Arrayán,Ferrari,Ramiro
+3° Arrayán,Giménez,Bautista
+3° Arrayán,Godoy,Lorenzo
+3° Arrayán,Gutiérrez,Ramiro Isabella
+3° Arrayán,Herrera,Manuel
+3° Arrayán,Juárez,Joaquín
+3° Arrayán,Ledesma,Francesca
+3° Arrayán,Molina,Lisandro
+3° Arrayán,Morales,Bruno Benicio
+3° Arrayán,Núñez,Joaquín Milo
+3° Arrayán,Pereyra,Francisco
+3° Arrayán,Rodríguez,Benicio
+3° Arrayán,Rodríguez,Lautaro
+3° Arrayán,Romero,Francisco
+3° Arrayán,Ríos,Sofía
+3° Arrayán,Sánchez,Guadalupe
+3° Arrayán,Torres,Martina
+3° Ceibo,Castillo,Juan Cruz
+3° Ceibo,Díaz,Manuel
+3° Ceibo,Ferrari,Ignacio Lautaro
+3° Ceibo,Flores,Bruno
+3° Ceibo,Giménez,Emilia Valentín
+3° Ceibo,Iglesias,Benicio
+3° Ceibo,Ledesma,Bruno
+3° Ceibo,Ledesma,Manuel
+3° Ceibo,Luna,Simón
+3° Ceibo,López,Catalina
+3° Ceibo,Martínez,Bautista
+3° Ceibo,Morales,Francesca Julieta
+3° Ceibo,Navarro,Alma Lorenzo
+3° Ceibo,Ortiz,Ramiro
+3° Ceibo,Pereyra,Clara
+3° Ceibo,Rodríguez,Mateo Emma
+3° Ceibo,Rojas,Paloma
+3° Ceibo,Silva,Josefina
+3° Ceibo,Sosa,Lautaro
+3° Jacarandá,Acosta,Catalina
+3° Jacarandá,Cabrera,Francisco
+3° Jacarandá,Ferrari,Valentín Pilar
+3° Jacarandá,Flores,Felipe Renata
+3° Jacarandá,Herrera,Tomás
+3° Jacarandá,Iglesias,Gael Milo
+3° Jacarandá,Juárez,Olivia
+3° Jacarandá,Luna,Pedro
+3° Jacarandá,López,Nicolás
+3° Jacarandá,Muñoz,Mía Benjamín
+3° Jacarandá,Navarro,Benicio
+3° Jacarandá,Paz,Clara
+3° Jacarandá,Quiroga,Facundo Lautaro
+3° Jacarandá,Romero,Mateo Emilia
+3° Jacarandá,Ruiz,Manuel
+3° Jacarandá,Vega,Victoria
+3° Jacarandá,Vázquez,Benjamín
+3° Jacarandá,Vázquez,Josefina
+4° Arrayán,Benítez,Manuel
+4° Arrayán,Carrizo,Victoria
+4° Arrayán,Domínguez,Mateo
+4° Arrayán,Ferrari,Josefina
+4° Arrayán,Ferreyra,Benjamín
+4° Arrayán,Gutiérrez,Simón
+4° Arrayán,Gómez,Isabella
+4° Arrayán,Herrera,Paloma
+4° Arrayán,Iglesias,Mateo
+4° Arrayán,Ledesma,Mateo
+4° Arrayán,Luna,Ramiro
+4° Arrayán,López,Valentina Ignacio
+4° Arrayán,Morales,Julieta
+4° Arrayán,Moreno,Manuel
+4° Arrayán,Moreno,Martina
+4° Arrayán,Pereyra,Emma
+4° Arrayán,Rojas,Ignacio
+4° Arrayán,Ríos,Josefina
+4° Arrayán,Silva,Ignacio
+4° Arrayán,Silva,Pilar
+4° Ceibo,Carrizo,Ema Guadalupe
+4° Ceibo,Fernández,Simón
+4° Ceibo,Gutiérrez,Benjamín
+4° Ceibo,Ledesma,Valentín
+4° Ceibo,Luna,Joaquín
+4° Ceibo,Martínez,Bruno
+4° Ceibo,Morales,Bautista
+4° Ceibo,Muñoz,Juana
+4° Ceibo,Ojeda,Pedro
+4° Ceibo,Peralta,Ignacio
+4° Ceibo,Pereyra,Francesca
+4° Ceibo,Pereyra,Santino
+4° Ceibo,Ponce,Gael
+4° Ceibo,Romero,Pilar
+4° Ceibo,Ruiz,Lola
+4° Ceibo,Sosa,Tomás
+4° Ceibo,Torres,Lola
+4° Jacarandá,Acosta,Victoria
+4° Jacarandá,Aguirre,Agustina
+4° Jacarandá,Benítez,Ignacio
+4° Jacarandá,Cabrera,Joaquín Emma
+4° Jacarandá,Cabrera,Valentina
+4° Jacarandá,Ferreyra,Ignacio
+4° Jacarandá,Flores,Victoria
+4° Jacarandá,Gómez,Facundo
+4° Jacarandá,Juárez,Valentina Pilar
+4° Jacarandá,Muñoz,Julieta
+4° Jacarandá,Navarro,Tomás
+4° Jacarandá,Ponce,Nicolás
+4° Jacarandá,Pérez,Lisandro Juana
+4° Jacarandá,Pérez,Milo
+4° Jacarandá,Quiroga,Clara Catalina
+4° Jacarandá,Ramírez,Francesca Santino
+4° Jacarandá,Sosa,Alma
+4° Jacarandá,Torres,Juana
+5° Arrayán,Acosta,Emilia
+5° Arrayán,Arias,Valentina
+5° Arrayán,Benítez,Alma
+5° Arrayán,Bianchi,Ignacio
+5° Arrayán,Ferrari,Tomás
+5° Arrayán,Flores,Lola
+5° Arrayán,Gómez,Ema
+5° Arrayán,Gómez,Ignacio
+5° Arrayán,Herrera,Alma
+5° Arrayán,Herrera,Thiago
+5° Arrayán,Ledesma,Renata
+5° Arrayán,Martínez,Julieta Renata
+5° Arrayán,Muñoz,Felipe
+5° Arrayán,Navarro,Ema Bautista
+5° Arrayán,Navarro,Nicolás Nicolás
+5° Arrayán,Navarro,Santino
+5° Arrayán,Ortiz,Tomás
+5° Arrayán,Ruiz,Lautaro
+5° Arrayán,Sánchez,Benicio Ignacio
+5° Arrayán,Vega,Pilar
+5° Arrayán,Álvarez,Valentina
+5° Ceibo,Benítez,Bautista
+5° Ceibo,Bianchi,Nicolás
+5° Ceibo,Castro,Ema
+5° Ceibo,Domínguez,Facundo
+5° Ceibo,Díaz,Nicolás Guadalupe
+5° Ceibo,Ferrari,Paloma
+5° Ceibo,Ferreyra,Joaquín
+5° Ceibo,Godoy,Joaquín
+5° Ceibo,González,Martina
+5° Ceibo,Gómez,Juana Valentín
+5° Ceibo,Ortiz,Facundo
+5° Ceibo,Rojas,Lisandro
+5° Ceibo,Rojas,Renata
+5° Ceibo,Sosa,Ema
+5° Ceibo,Sosa,Juana Emma
+5° Ceibo,Sánchez,Facundo
+5° Ceibo,Torres,Alma
+5° Ceibo,Vega,Bruno
+5° Ceibo,Vega,Felipe
+5° Ceibo,Vega,Thiago
+5° Jacarandá,Acosta,Sofía
+5° Jacarandá,Bianchi,Catalina
+5° Jacarandá,Cabrera,Clara
+5° Jacarandá,Carrizo,Bautista
+5° Jacarandá,Domínguez,Benicio
+5° Jacarandá,Giménez,Lorenzo
+5° Jacarandá,Giménez,Lucía Renata
+5° Jacarandá,Godoy,Lisandro
+5° Jacarandá,Herrera,Mateo
+5° Jacarandá,Ledesma,Joaquín
+5° Jacarandá,Ledesma,Juana
+5° Jacarandá,Luna,Mía
+5° Jacarandá,Ortiz,Valentina
+5° Jacarandá,Peralta,Josefina
+5° Jacarandá,Ramírez,Valentina
+5° Jacarandá,Rodríguez,Clara
+5° Jacarandá,Romero,Manuel
+5° Jacarandá,Romero,Olivia
+5° Jacarandá,Rossi,Paloma
+5° Jacarandá,Ríos,Agustina
+5° Jacarandá,Suárez,Agustina
+5° Jacarandá,Suárez,Benjamín Lorenzo
+6° Arrayán,Ferreyra,Lucía
+6° Arrayán,García,Ema
+6° Arrayán,Godoy,Lautaro
+6° Arrayán,Gómez,Lisandro
+6° Arrayán,Herrera,Ignacio
+6° Arrayán,Iglesias,Gael
+6° Arrayán,Ledesma,Pedro
+6° Arrayán,Morales,Lorenzo
+6° Arrayán,Núñez,Clara
+6° Arrayán,Peralta,Lautaro
+6° Arrayán,Ponce,Valentina
+6° Arrayán,Quiroga,Emilia
+6° Arrayán,Quiroga,Paloma
+6° Arrayán,Romero,Felipe Bruno
+6° Arrayán,Rossi,Josefina
+6° Arrayán,Sosa,Nicolás
+6° Arrayán,Suárez,Mía
+6° Ceibo,Ferrari,Ema
+6° Ceibo,Ferrari,Mateo
+6° Ceibo,Ferrari,Simón
+6° Ceibo,García,Josefina
+6° Ceibo,García,Julieta
+6° Ceibo,Godoy,Paloma
+6° Ceibo,Gómez,Juana
+6° Ceibo,Herrera,Juana
+6° Ceibo,Ledesma,Emma
+6° Ceibo,Martínez,Guadalupe
+6° Ceibo,Martínez,Lisandro
+6° Ceibo,Molina,Catalina
+6° Ceibo,Moreno,Pilar
+6° Ceibo,Paz,Nicolás Alma
+6° Ceibo,Peralta,Valentina
+6° Ceibo,Ponce,Joaquín Ema
+6° Ceibo,Ramírez,Facundo
+6° Ceibo,Rojas,Clara Benicio
+6° Ceibo,Romero,Alma
+6° Ceibo,Ruiz,Facundo
+6° Ceibo,Ruiz,Juana
+6° Ceibo,Suárez,Julieta Mateo
+6° Ceibo,Álvarez,Isabella
+6° Jacarandá,Acosta,Nicolás
+6° Jacarandá,Acosta,Paloma
+6° Jacarandá,Aguirre,Benjamín
+6° Jacarandá,Arias,Nicolás
+6° Jacarandá,Cabrera,Santino
+6° Jacarandá,Carrizo,Facundo
+6° Jacarandá,González,Francisco
+6° Jacarandá,González,Tomás
+6° Jacarandá,Juárez,Facundo
+6° Jacarandá,Morales,Nicolás
+6° Jacarandá,Moreno,Santino
+6° Jacarandá,Ojeda,Juan Cruz
+6° Jacarandá,Ortiz,Julieta Emilia
+6° Jacarandá,Pérez,Nicolás
+6° Jacarandá,Quiroga,Simón
+6° Jacarandá,Rojas,Josefina
+6° Jacarandá,Ríos,Bautista
+6° Jacarandá,Ríos,Delfina
+6° Jacarandá,Silva,Lola
+6° Jacarandá,Suárez,Victoria
+6° Jacarandá,Sánchez,Julieta
+6° Jacarandá,Torres,Bruno
+6° Jacarandá,Álvarez,Mateo

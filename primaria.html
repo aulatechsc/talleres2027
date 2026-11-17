@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inscripción a Talleres</title>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/form.css">
+</head>
+<body data-nivel="primaria">
+<header class="top">
+  <div>
+    <div class="logo">Talleres <span id="t-anio"></span></div>
+    <div class="logo-sub">Colegio San Carlos · <span id="t-nivel"></span></div>
+  </div>
+  <div class="spacer"></div>
+  <span class="demo-badge" id="demo" hidden>Modo demo</span>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <h1>Inscripción a talleres</h1>
+    <p>Elegí un taller por día (podés dejar días sin taller). La inscripción queda sujeta a confirmación del colegio.</p>
+  </div>
+
+  <form id="form" novalidate>
+    <section class="card">
+      <h2>Alumno/a</h2>
+      <p class="sub">Tal como figura en la lista del colegio.</p>
+      <div class="row2">
+        <div class="field"><label for="nombre">Nombre</label><input id="nombre" autocomplete="off"></div>
+        <div class="field"><label for="apellido">Apellido</label><input id="apellido" autocomplete="off"></div>
+      </div>
+      <div class="field"><label for="curso" id="lbl-curso">Curso</label><select id="curso"></select></div>
+    </section>
+
+    <section class="card">
+      <h2>Talleres</h2>
+      <p class="sub">Solo aparecen los talleres que corresponden a su curso.</p>
+      <div id="dias"></div>
+    </section>
+
+    <section class="card">
+      <h2>Adulto responsable</h2>
+      <div class="field"><label for="responsable">Nombre y apellido</label><input id="responsable" autocomplete="name"></div>
+      <div class="row2">
+        <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email"></div>
+        <div class="field"><label for="telefono">Teléfono</label><input id="telefono" type="tel" autocomplete="tel"></div>
+      </div>
+      <div class="field"><label for="observaciones">Observaciones (opcional)</label><textarea id="observaciones" rows="2"></textarea></div>
+    </section>
+
+    <div class="footer-bar">
+      <span id="resumen"></span>
+      <button class="btn btn-red" id="enviar" type="submit">Enviar inscripción</button>
+    </div>
+  </form>
+
+  <section class="card" id="ok" hidden>
+    <div class="check">✓</div>
+    <h2>¡Inscripción enviada!</h2>
+    <div id="ok-detalle"></div>
+    <button class="btn btn-primary" id="otra" type="button">Inscribir a otro hermano/a</button>
+  </section>
+</main>
+<div id="toast"></div>
+
+<script src="/config/talleres.js"></script>
+<script src="/js/supabase-config.js"></script>
+<script src="/js/db.js"></script>
+<script src="/js/form.js"></script>
+</body>
+</html>

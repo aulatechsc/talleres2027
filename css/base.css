@@ -1,0 +1,74 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+:root {
+  /* Tokens — Colegio San Carlos Diálogos */
+  --azul: #00476c; --azul-dk: #003550; --rojo: #e4051f; --blanco: #ffffff;
+  --celeste: #b9cce1; --celeste-lt: #e8eef5; --gris: #b2b2b2;
+  --bg: var(--celeste-lt); --surface: var(--blanco); --border: #d3dbe4;
+  --text: var(--azul); --muted: rgba(0,71,108,.72);
+  --green: var(--azul); --green-lt: var(--celeste-lt); --amber: #8a5300; --amber-lt: #fff2dc;
+  --radius: 8px; --shadow: none;
+  --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px;
+  --d0-bg: var(--celeste-lt); --d0-t: var(--azul); --d0-bd: var(--celeste);
+  --d1-bg: var(--celeste-lt); --d1-t: var(--azul); --d1-bd: var(--celeste);
+  --d2-bg: var(--celeste-lt); --d2-t: var(--azul); --d2-bd: var(--celeste);
+  --d3-bg: var(--celeste-lt); --d3-t: var(--azul); --d3-bd: var(--celeste);
+  --d4-bg: var(--celeste-lt); --d4-t: var(--azul); --d4-bd: var(--celeste);
+}
+
+body { font-family: 'Ubuntu', system-ui, sans-serif; background: var(--blanco); color: var(--text); min-height: 100vh; }
+
+header.top {
+  background: var(--azul); color: #fff; padding: 16px 24px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  
+}
+.logo { font-size: 19px; font-weight: 600; }
+.logo span { color: var(--celeste); }
+.logo-sub { font-size: 11px; color: var(--celeste); margin-top: 2px; }
+.spacer { flex: 1; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  padding: 9px 14px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid var(--border); background: var(--surface); color: var(--text);
+  transition: background .15s, border-color .15s, opacity .15s; white-space: nowrap;
+}
+.btn:hover { border-color: #c9c2b7; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn-primary { background: var(--azul); border-color: var(--azul); color: #fff; }
+.btn-primary:hover { background: var(--azul-dk); border-color: var(--azul-dk); }
+.btn-red { background: var(--rojo); border-color: var(--rojo); color: #fff; }
+.btn-ghost-light { background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.28); color: #fff; }
+.btn-ghost-light:hover { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.4); }
+.btn-sm { font-size: 12px; padding: 6px 10px; }
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; font-weight: 600; color: var(--muted);
+  margin-bottom: 5px; letter-spacing: .4px; text-transform: uppercase;
+}
+.input, .field input, .field select, .field textarea {
+  width: 100%; font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; outline: none; transition: border-color .15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus, .input:focus { border-color: var(--azul); background: var(--surface); }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238C8479' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px !important; }
+
+#toast {
+  position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(16px);
+  background: var(--text); color: #fff; padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 500; opacity: 0; transition: opacity .22s, transform .22s;
+  pointer-events: none; z-index: 400; max-width: 420px; text-align: center;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.ok { background: var(--azul); }
+#toast.error { background: var(--rojo); }
+
+.demo-badge {
+  background: var(--celeste); color: var(--azul); font-size: 11px; font-weight: 700;
+  letter-spacing: .5px; padding: 4px 10px; border-radius: 20px; text-transform: uppercase;
+}

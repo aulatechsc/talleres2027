@@ -1,0 +1,255 @@
+curso,apellido,nombre
+1° A,Castillo,Clara
+1° A,Fernández,Delfina Nicolás
+1° A,Gutiérrez,Benicio
+1° A,Gutiérrez,Paloma
+1° A,Gutiérrez,Renata
+1° A,Ledesma,Bautista
+1° A,Medina,Lucía Juan Cruz
+1° A,Moreno,Olivia Gael
+1° A,Ojeda,Valentina
+1° A,Ortiz,Delfina
+1° A,Paz,Valentín
+1° A,Pereyra,Isabella
+1° A,Pereyra,Renata
+1° A,Pérez,Francisco
+1° A,Ramírez,Joaquín
+1° A,Ramírez,Lautaro
+1° A,Rossi,Ema
+1° A,Ríos,Bautista Lisandro
+1° A,Sosa,Benjamín
+1° A,Suárez,Valentina
+1° A,Torres,Valentina
+1° A,Vázquez,Lautaro
+1° B,Acosta,Emma
+1° B,Acosta,Pilar
+1° B,Domínguez,Paloma
+1° B,Ferrari,Mía
+1° B,Giménez,Simón Lautaro
+1° B,Godoy,Martina
+1° B,Gutiérrez,Delfina
+1° B,Iglesias,Agustina
+1° B,López,Emma
+1° B,Medina,Agustina
+1° B,Molina,Felipe Clara
+1° B,Morales,Martina
+1° B,Moreno,Delfina
+1° B,Ortiz,Francesca
+1° B,Ponce,Isabella
+1° B,Rojas,Isabella
+1° B,Rojas,Mía
+1° B,Silva,Nicolás
+1° B,Sosa,Santino
+1° B,Suárez,Ignacio
+2° A,Domínguez,Gael
+2° A,Flores,Simón
+2° A,Godoy,Victoria
+2° A,González,Lautaro
+2° A,Herrera,Valentina Lucía
+2° A,Iglesias,Clara
+2° A,Luna,Isabella Ignacio
+2° A,Moreno,Clara
+2° A,Muñoz,Ema
+2° A,Muñoz,Juan Cruz Francesca
+2° A,Navarro,Paloma
+2° A,Núñez,Josefina
+2° A,Peralta,Gael Lisandro
+2° A,Pérez,Bruno
+2° A,Quiroga,Valentina
+2° A,Rossi,Lorenzo
+2° A,Vega,Lola
+2° A,Vázquez,Ignacio
+2° A,Vázquez,Victoria
+2° B,Aguirre,Manuel
+2° B,Castillo,Ignacio
+2° B,Castillo,Julieta
+2° B,Castro,Guadalupe
+2° B,Domínguez,Bautista Ramiro
+2° B,García,Lola
+2° B,Godoy,Juana
+2° B,Gómez,Lorenzo
+2° B,Herrera,Julieta
+2° B,Iglesias,Sofía
+2° B,López,Gael Mía
+2° B,Medina,Guadalupe
+2° B,Núñez,Martina
+2° B,Ojeda,Paloma
+2° B,Pereyra,Lorenzo
+2° B,Ramírez,Thiago Julieta
+2° B,Rodríguez,Mía
+2° B,Rojas,Victoria
+2° B,Silva,Renata
+3° A,Aguirre,Benicio
+3° A,Benítez,Emilia
+3° A,Benítez,Mía
+3° A,Carrizo,Pilar
+3° A,Flores,Alma
+3° A,Godoy,Bautista Isabella
+3° A,Godoy,Francesca
+3° A,Godoy,Ramiro
+3° A,Herrera,Lisandro
+3° A,Iglesias,Guadalupe
+3° A,Luna,Isabella
+3° A,Molina,Paloma
+3° A,Navarro,Joaquín
+3° A,Pérez,Olivia Bruno
+3° A,Ramírez,Victoria
+3° A,Rossi,Alma
+3° A,Ruiz,Mateo
+3° A,Ríos,Tomás
+3° A,Silva,Gael Nicolás
+3° A,Sosa,Thiago
+3° A,Torres,Olivia
+3° A,Vázquez,Felipe Victoria
+3° B,Benítez,Paloma
+3° B,Carrizo,Clara Renata
+3° B,Castro,Agustina
+3° B,Fernández,Catalina
+3° B,Ferreyra,Sofía
+3° B,Giménez,Catalina
+3° B,Godoy,Guadalupe
+3° B,Godoy,Juan Cruz
+3° B,Godoy,Milo
+3° B,Herrera,Ramiro
+3° B,López,Josefina
+3° B,Moreno,Juana Francisco
+3° B,Muñoz,Valentín
+3° B,Núñez,Valentina
+3° B,Ojeda,Lola
+3° B,Ortiz,Bautista
+3° B,Romero,Ema Francisco
+3° B,Ríos,Catalina
+3° B,Ríos,Nicolás
+3° B,Ríos,Olivia
+3° B,Suárez,Milo Lisandro
+3° B,Sánchez,Milo
+4° A,Benítez,Lautaro Benicio
+4° A,Benítez,Valentina
+4° A,Bianchi,Benicio
+4° A,Castillo,Catalina
+4° A,Ferreyra,Felipe
+4° A,Giménez,Paloma
+4° A,López,Ema Francesca
+4° A,Molina,Juan Cruz Olivia
+4° A,Molina,Valentín
+4° A,Moreno,Lautaro
+4° A,Ojeda,Joaquín
+4° A,Ortiz,Clara
+4° A,Ortiz,Sofía
+4° A,Peralta,Delfina
+4° A,Pereyra,Tomás
+4° A,Pérez,Isabella Martina
+4° A,Rossi,Simón
+4° A,Rossi,Thiago
+4° A,Ríos,Francesca Gael
+4° A,Ríos,Isabella
+4° A,Silva,Delfina
+4° A,Torres,Juan Cruz
+4° A,Vázquez,Juan Cruz
+4° B,Aguirre,Benjamín Milo
+4° B,Benítez,Benjamín
+4° B,Benítez,Ema
+4° B,Benítez,Francesca Renata
+4° B,Castillo,Simón
+4° B,Castro,Olivia
+4° B,Díaz,Martina
+4° B,Fernández,Victoria
+4° B,Ledesma,Olivia
+4° B,Martínez,Santino
+4° B,Medina,Facundo
+4° B,Medina,Sofía
+4° B,Muñoz,Benicio Pedro
+4° B,Navarro,Ramiro
+4° B,Navarro,Thiago
+4° B,Pereyra,Agustina
+4° B,Ramírez,Paloma
+4° B,Suárez,Lautaro
+4° B,Vega,Emma
+4° B,Vega,Lucía
+4° B,Álvarez,Guadalupe
+4° B,Álvarez,Olivia
+5° A,Castro,Delfina
+5° A,Díaz,Mía
+5° A,Ferreyra,Clara
+5° A,Flores,Bautista Olivia
+5° A,Godoy,Simón
+5° A,González,Valentín
+5° A,Herrera,Emilia
+5° A,Herrera,Tomás Valentín
+5° A,Ledesma,Thiago
+5° A,Luna,Josefina
+5° A,Muñoz,Guadalupe
+5° A,Peralta,Simón
+5° A,Pérez,Catalina
+5° A,Quiroga,Benicio
+5° A,Rojas,Valentina Francisco
+5° A,Sosa,Pedro
+5° A,Suárez,Olivia Tomás
+5° A,Sánchez,Sofía
+5° A,Vega,Santino
+5° B,Benítez,Juana Mía
+5° B,Cabrera,Valentín
+5° B,Díaz,Olivia
+5° B,García,Renata
+5° B,Giménez,Lisandro
+5° B,Gómez,Renata
+5° B,Iglesias,Bautista
+5° B,Luna,Valentina Benjamín
+5° B,Medina,Catalina
+5° B,Medina,Isabella
+5° B,Molina,Ramiro
+5° B,Morales,Gael
+5° B,Morales,Guadalupe
+5° B,Morales,Valentín
+5° B,Núñez,Nicolás
+5° B,Ortiz,Pedro
+5° B,Pereyra,Bruno
+5° B,Ponce,Julieta
+5° B,Ponce,Valentina Thiago
+5° B,Rodríguez,Lisandro
+5° B,Romero,Mía
+5° B,Romero,Olivia Alma
+5° B,Ríos,Martina
+5° B,Sánchez,Francesca
+5° B,Álvarez,Milo
+6° A,Arias,Mía
+6° A,Díaz,Lola
+6° A,Ferrari,Juan Cruz
+6° A,Ferreyra,Mía
+6° A,García,Milo
+6° A,Giménez,Isabella
+6° A,Godoy,Pilar
+6° A,Gutiérrez,Tomás
+6° A,Herrera,Sofía
+6° A,Juárez,Delfina
+6° A,López,Gael
+6° A,Medina,Renata
+6° A,Ojeda,Emma
+6° A,Paz,Ignacio
+6° A,Peralta,Facundo Emma
+6° A,Ponce,Juan Cruz Paloma
+6° A,Quiroga,Facundo
+6° A,Ramírez,Victoria Valentín
+6° A,Ríos,Alma
+6° A,Silva,Renata Nicolás
+6° A,Álvarez,Ignacio
+6° B,Acosta,Lautaro
+6° B,Aguirre,Victoria
+6° B,Carrizo,Ramiro Agustina
+6° B,Ferrari,Emilia Alma
+6° B,Flores,Olivia
+6° B,Godoy,Isabella
+6° B,Gutiérrez,Guadalupe
+6° B,Ledesma,Lola
+6° B,Ledesma,Paloma
+6° B,Luna,Lisandro Clara
+6° B,Martínez,Lola
+6° B,Martínez,Lorenzo
+6° B,Medina,Pedro
+6° B,Ojeda,Isabella
+6° B,Peralta,Mateo
+6° B,Pereyra,Lola
+6° B,Quiroga,Thiago
+6° B,Rossi,Martina
+6° B,Ruiz,Ramiro
+6° B,Sosa,Martina

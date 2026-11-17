@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de Talleres</title>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Ubuntu+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/panel.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <div class="logo">Talleres <span id="t-anio"></span></div>
+    <div class="logo-sub">Panel de gestión · Colegio San Carlos</div>
+  </div>
+  <nav class="niveles" id="niveles"></nav>
+  <div class="spacer"></div>
+  <span class="demo-badge" id="demo" hidden>Modo demo</span>
+  <span class="user" id="user"></span>
+  <button class="btn btn-ghost-light btn-sm" id="salir" hidden>Salir</button>
+</header>
+
+<div class="subbar">
+  <nav class="vistas" id="vistas">
+    <button data-v="alumnos" class="on">Alumnos <span class="cnt" id="c-alumnos"></span></button>
+    <button data-v="inscripciones">Inscripciones <span class="cnt warn" id="c-pend"></span></button>
+    <button data-v="resumen">Resumen por taller</button>
+    <button data-v="historial">Historial</button>
+  </nav>
+  <div class="spacer"></div>
+  <div class="acciones" id="acciones"></div>
+</div>
+
+<main id="main"></main>
+
+<!-- Modal genérico -->
+<div class="modal-backdrop" id="modal"><div class="modal" id="modal-box"></div></div>
+
+<!-- Login (solo con Supabase) -->
+<div class="login" id="login" hidden>
+  <div class="login-card">
+    <div class="logo" style="color:var(--azul)">Talleres <span style="color:var(--rojo)" id="l-anio"></span></div>
+    <p>Ingresá con tu cuenta institucional <b>@sancarlos.edu.ar</b>.</p>
+    <button class="btn btn-primary" id="btn-login">Ingresar con Google</button>
+    <p class="login-err" id="login-err"></p>
+  </div>
+</div>
+
+<div class="spin-overlay" id="spinner"><div class="spinner"></div><div class="spin-text" id="spin-text">Cargando…</div></div>
+<div id="toast"></div>
+
+<script src="/config/talleres.js"></script>
+<script src="/js/supabase-config.js"></script>
+<script src="/js/db.js"></script>
+<script src="/js/csv.js"></script>
+<script src="/js/panel.js"></script>
+</body>
+</html>
