@@ -9,6 +9,9 @@ window.TALLERES_CONFIG = {
 
   dias: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"],
 
+  // Meses que se facturan (1 = enero)
+  mesesFacturables: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+
   niveles: {
     // ----------------------------------------------------------
     inicial: {
@@ -21,6 +24,8 @@ window.TALLERES_CONFIG = {
         const m = String(curso).match(/\((\d)\)/);
         return m ? m[1] : null;
       },
+      // Talleres que se cobran aparte (por veces por semana), fuera de la escala
+      facturacion: { aparte: [] },
       grupos: { "3": "Sala de 3", "4": "Sala de 4", "5": "Sala de 5" },
       // Grilla 2026 (0=Lunes … 4=Viernes). [] = ese día no hay taller.
       grilla: {
@@ -67,6 +72,7 @@ window.TALLERES_CONFIG = {
         if (n >= 4 && n <= 6) return "2";
         return null;
       },
+      facturacion: { aparte: ["Fútbol"] },
       grupos: { "1": "1er Ciclo (1°, 2° y 3°)", "2": "2do Ciclo (4°, 5° y 6°)" },
       // Grilla 2026 (sin Natación, que se gestiona aparte)
       grilla: {
@@ -101,6 +107,7 @@ window.TALLERES_CONFIG = {
         if (n >= 4 && n <= 6) return "superior";
         return null;
       },
+      facturacion: { aparte: [] },
       grupos: { basico: "Ciclo Básico (1° a 3°)", superior: "Ciclo Superior (4° a 6°)" },
       // ⚠ GRILLA DE EJEMPLO — reemplazar por la real
       grilla: {

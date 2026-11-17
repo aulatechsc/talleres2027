@@ -27,12 +27,29 @@
   <form id="form" novalidate>
     <section class="card">
       <h2>Alumno/a</h2>
-      <p class="sub">Tal como figura en la lista del colegio.</p>
-      <div class="row2">
-        <div class="field"><label for="nombre">Nombre</label><input id="nombre" autocomplete="off"></div>
-        <div class="field"><label for="apellido">Apellido</label><input id="apellido" autocomplete="off"></div>
-      </div>
+      <p class="sub">Elegí el curso y buscá a tu hijo/a por apellido.</p>
       <div class="field"><label for="curso" id="lbl-curso">Curso</label><select id="curso"></select></div>
+
+      <div id="buscador" hidden>
+        <div class="field"><label for="buscar">Apellido</label>
+          <input id="buscar" autocomplete="off" placeholder="Escribí al menos 3 letras del apellido"></div>
+        <div id="resultados" class="resultados" role="listbox"></div>
+        <button type="button" class="link" id="no-esta">No lo/la encuentro en la lista</button>
+      </div>
+
+      <div id="elegido" class="elegido" hidden>
+        <div><div class="el-nom" id="el-nom"></div><div class="el-cur" id="el-cur"></div></div>
+        <button type="button" class="link" id="cambiar-al">Cambiar</button>
+      </div>
+
+      <div id="manual" hidden>
+        <p class="aviso">Completá los datos y el colegio lo/la va a sumar a la lista.</p>
+        <div class="row2">
+          <div class="field"><label for="nombre">Nombre</label><input id="nombre" autocomplete="off"></div>
+          <div class="field"><label for="apellido">Apellido</label><input id="apellido" autocomplete="off"></div>
+        </div>
+        <button type="button" class="link" id="volver-buscar">Volver a buscar en la lista</button>
+      </div>
     </section>
 
     <section class="card">

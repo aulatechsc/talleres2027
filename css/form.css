@@ -32,3 +32,13 @@
 .hero { margin-bottom: 18px; }
 .hero h1 { font-size: 24px; color: var(--azul); }
 .hero p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.link { background: none; border: none; color: var(--azul); font: inherit; font-size: 13px; font-weight: 500; text-decoration: underline; cursor: pointer; padding: 4px 0; }
+.resultados { display: grid; gap: 6px; margin: -4px 0 10px; }
+.resultados:empty { display: none; }
+.res-item { text-align: left; font: inherit; font-size: 14px; color: var(--azul); background: var(--blanco); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; cursor: pointer; }
+.res-item:hover, .res-item:focus { border-color: var(--azul); background: var(--celeste-lt); outline: none; }
+.res-vacio { font-size: 13px; color: var(--muted); padding: 4px 0; }
+.elegido { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--celeste-lt); border: 1.5px solid var(--celeste); border-radius: var(--radius); padding: 12px 14px; }
+.el-nom { font-weight: 700; font-size: 15px; }
+.el-cur { font-size: 13px; color: var(--muted); }
+.aviso { font-size: 13px; color: var(--muted); margin-bottom: 12px; }

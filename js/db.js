@@ -11,46 +11,57 @@
         const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16);
       }));
   const now = () => new Date().toISOString();
+  const norm = s => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 
   // ----------------------------------------------------------
   //  MODO DEMO (localStorage)
   // ----------------------------------------------------------
   function demoAdapter() {
     const KEY = 'talleres_demo_' + CICLO;
-    const load = () => {
-      try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; }
-    };
-    let st = load() || { alumnos: [], inscripciones: [], asignaciones: [], historial: [] };
+    const vacio = () => ({ alumnos: [], inscripciones: [], asignaciones: [], historial: [], cambios: [], liquidaciones: [], precios: {} });
+    const load = () => { try { return Object.assign(vacio(), JSON.parse(localStorage.getItem(KEY)) || {}); } catch { return vacio(); } };
+    let st = load();
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
-    const refresh = () => { st = load() || st; };
+    const refresh = () => { st = load(); };
     const keyAl = a => [a.nivel, a.curso, a.apellido, a.nombre].join('|').toLowerCase();
+    const idsNivel = nivel => new Set(st.alumnos.filter(a => a.nivel === nivel).map(a => a.id));
 
     return {
       modo: 'demo',
       async init() {},
       async getUser() { return { email: 'demo@sancarlos.edu.ar' }; },
+      async esStaff() { return true; },
       async signIn() {}, async signOut() {},
 
-      async listAlumnos(nivel) { refresh(); return st.alumnos.filter(a => a.nivel === nivel); },
-      async listAsignaciones(nivel) {
+      // ---- público (formulario) ----
+      async buscarAlumnos(nivel, curso, texto) {
         refresh();
-        const ids = new Set(st.alumnos.filter(a => a.nivel === nivel).map(a => a.id));
-        return st.asignaciones.filter(x => ids.has(x.alumno_id));
+        const t = norm(texto);
+        if (t.length < 3) return [];
+        return st.alumnos.filter(a => a.nivel === nivel && a.curso === curso &&
+          (norm(a.apellido).includes(t) || norm(a.nombre + ' ' + a.apellido).includes(t)))
+          .slice(0, 10).map(({ id, apellido, nombre }) => ({ id, apellido, nombre }));
       },
+      async insertInscripcion(data) {
+        refresh();
+        st.inscripciones.push({ id: uuid(), ciclo_lectivo: CICLO, estado: 'pendiente', alumno_id: null, created_at: now(), ...data });
+        save();
+      },
+
+      // ---- panel ----
+      async listAlumnos(nivel) { refresh(); return st.alumnos.filter(a => a.nivel === nivel); },
+      async listAsignaciones(nivel) { refresh(); const ids = idsNivel(nivel); return st.asignaciones.filter(x => ids.has(x.alumno_id)); },
       async listInscripciones(nivel) {
         refresh();
-        return st.inscripciones.filter(i => i.nivel === nivel)
-          .sort((a, b) => b.created_at.localeCompare(a.created_at));
+        return st.inscripciones.filter(i => i.nivel === nivel).sort((a, b) => b.created_at.localeCompare(a.created_at));
       },
       async listHistorial(nivel) {
         refresh();
-        return st.historial.filter(h => h.nivel === nivel)
-          .sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 500);
+        return st.historial.filter(h => h.nivel === nivel).sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 500);
       },
       async importAlumnos(nivel, rows) {
         refresh();
-        const existing = new Set(st.alumnos.map(keyAl));
-        let n = 0;
+        const existing = new Set(st.alumnos.map(keyAl)); let n = 0;
         rows.forEach(r => {
           const a = { id: uuid(), ciclo_lectivo: CICLO, nivel, ...r, created_at: now() };
           if (!existing.has(keyAl(a))) { st.alumnos.push(a); existing.add(keyAl(a)); n++; }
@@ -67,6 +78,7 @@
         refresh();
         st.alumnos = st.alumnos.filter(a => a.id !== id);
         st.asignaciones = st.asignaciones.filter(x => x.alumno_id !== id);
+        st.cambios = st.cambios.filter(c => c.alumno_id !== id);
         st.inscripciones.forEach(i => { if (i.alumno_id === id) { i.alumno_id = null; i.estado = 'pendiente'; } });
         save();
       },
@@ -82,29 +94,45 @@
         st.asignaciones = st.asignaciones.filter(x => !(x.alumno_id === alumno_id && x.dia === dia));
         save();
       },
-      async insertInscripcion(data) {
-        refresh();
-        st.inscripciones.push({ id: uuid(), ciclo_lectivo: CICLO, estado: 'pendiente', alumno_id: null, created_at: now(), ...data });
-        save();
-      },
       async updateInscripcion(id, patch) {
-        refresh();
-        const i = st.inscripciones.find(x => x.id === id);
-        if (i) Object.assign(i, patch);
-        save();
+        refresh(); const i = st.inscripciones.find(x => x.id === id); if (i) Object.assign(i, patch); save();
       },
-      async log(e) {
+      async log(e) { refresh(); st.historial.push({ id: uuid(), created_at: now(), usuario: 'demo', ...e }); save(); },
+
+      // ---- cambios programados ----
+      async listCambios(nivel) { refresh(); return st.cambios.filter(c => c.nivel === nivel && c.estado === 'pendiente'); },
+      async addCambio(c) {
         refresh();
-        st.historial.push({ id: uuid(), created_at: now(), usuario: 'demo', ...e });
-        save();
+        // un solo cambio pendiente por alumno/día/mes: el nuevo reemplaza al anterior
+        st.cambios = st.cambios.filter(x => !(x.estado === 'pendiente' && x.alumno_id === c.alumno_id && x.dia === c.dia && x.mes_aplica === c.mes_aplica));
+        const row = { id: uuid(), estado: 'pendiente', created_at: now(), usuario: 'demo', ...c };
+        st.cambios.push(row); save(); return row;
       },
+      async updateCambio(id, patch) { refresh(); const c = st.cambios.find(x => x.id === id); if (c) Object.assign(c, patch); save(); },
+
+      // ---- facturación ----
+      async getPrecios(nivel) { refresh(); return st.precios[nivel] || null; },
+      async setPrecios(nivel, p) { refresh(); st.precios[nivel] = p; save(); },
+      async listLiquidaciones(nivel) { refresh(); return st.liquidaciones.filter(l => l.nivel === nivel); },
+      async saveLiquidacion(l) {
+        refresh();
+        if (st.liquidaciones.some(x => x.nivel === l.nivel && x.mes === l.mes)) throw new Error('Ese mes ya está cerrado.');
+        st.liquidaciones.push({ id: uuid(), cerrada_at: now(), usuario: 'demo', ...l }); save();
+      },
+      async deleteLiquidacion(nivel, mes) {
+        refresh(); st.liquidaciones = st.liquidaciones.filter(x => !(x.nivel === nivel && x.mes === mes)); save();
+      },
+
       async resetNivel(nivel) {
         refresh();
-        const ids = new Set(st.alumnos.filter(a => a.nivel === nivel).map(a => a.id));
+        const ids = idsNivel(nivel);
         st.alumnos = st.alumnos.filter(a => a.nivel !== nivel);
         st.asignaciones = st.asignaciones.filter(x => !ids.has(x.alumno_id));
         st.inscripciones = st.inscripciones.filter(i => i.nivel !== nivel);
         st.historial = st.historial.filter(h => h.nivel !== nivel);
+        st.cambios = st.cambios.filter(c => c.nivel !== nivel);
+        st.liquidaciones = st.liquidaciones.filter(l => l.nivel !== nivel);
+        delete st.precios[nivel];
         save();
       }
     };
@@ -145,14 +173,21 @@
         user = data.session ? data.session.user : null;
       },
       async getUser() { return user; },
-      async signIn() {
-        await sb.auth.signInWithOAuth({
-          provider: 'google',
-          options: { redirectTo: location.href.split('#')[0], queryParams: { hd: 'sancarlos.edu.ar' } }
-        });
+      async esStaff() { const { data } = await sb.rpc('es_staff'); return !!data; },
+      // Acceso al panel con link mágico por email (solo emails cargados en la tabla staff)
+      async signIn(email) {
+        chk(await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href.split('#')[0], shouldCreateUser: true } }));
       },
       async signOut() { await sb.auth.signOut(); location.reload(); },
 
+      // ---- público (formulario) ----
+      async buscarAlumnos(nivel, curso, texto) {
+        if (String(texto).trim().length < 3) return [];
+        return chk(await sb.rpc('buscar_alumnos', { p_nivel: nivel, p_curso: curso, p_texto: texto }));
+      },
+      async insertInscripcion(data) { chk(await sb.from('inscripciones').insert({ ciclo_lectivo: CICLO, ...data })); },
+
+      // ---- panel ----
       listAlumnos: (nivel) => fetchAll(() =>
         sb.from('alumnos').select('*').eq('ciclo_lectivo', CICLO).eq('nivel', nivel).order('id')),
       listAsignaciones: async (nivel) => {
@@ -196,14 +231,36 @@
       async deleteAsignacion(alumno_id, dia) {
         chk(await sb.from('asignaciones').delete().eq('alumno_id', alumno_id).eq('dia', dia));
       },
-      async insertInscripcion(data) {
-        chk(await sb.from('inscripciones').insert({ ciclo_lectivo: CICLO, ...data }));
+      async updateInscripcion(id, patch) { chk(await sb.from('inscripciones').update(patch).eq('id', id)); },
+      async log(e) { await sb.from('historial').insert({ usuario: user ? user.email : null, ...e }); },
+
+      // ---- cambios programados ----
+      listCambios: (nivel) => fetchAll(() =>
+        sb.from('cambios_programados').select('*').eq('nivel', nivel).eq('estado', 'pendiente').order('created_at')),
+      async addCambio(c) {
+        chk(await sb.from('cambios_programados').delete()
+          .eq('estado', 'pendiente').eq('alumno_id', c.alumno_id).eq('dia', c.dia).eq('mes_aplica', c.mes_aplica));
+        return chk(await sb.from('cambios_programados').insert({ usuario: user ? user.email : null, ...c }).select().single());
       },
-      async updateInscripcion(id, patch) {
-        chk(await sb.from('inscripciones').update(patch).eq('id', id));
+      async updateCambio(id, patch) { chk(await sb.from('cambios_programados').update(patch).eq('id', id)); },
+
+      // ---- facturación ----
+      async getPrecios(nivel) {
+        const r = chk(await sb.from('precios').select('precios').eq('ciclo_lectivo', CICLO).eq('nivel', nivel).maybeSingle());
+        return r ? r.precios : null;
       },
-      async log(e) {
-        await sb.from('historial').insert({ usuario: user ? user.email : null, ...e });
+      async setPrecios(nivel, p) {
+        chk(await sb.from('precios').upsert({ ciclo_lectivo: CICLO, nivel, precios: p, updated_at: now() }, { onConflict: 'ciclo_lectivo,nivel' }));
+      },
+      async listLiquidaciones(nivel) {
+        return chk(await sb.from('liquidaciones').select('*').eq('ciclo_lectivo', CICLO).eq('nivel', nivel).order('mes'));
+      },
+      async saveLiquidacion(l) {
+        const { error } = await sb.from('liquidaciones').insert({ ciclo_lectivo: CICLO, usuario: user ? user.email : null, ...l });
+        if (error) throw new Error(error.code === '23505' ? 'Ese mes ya está cerrado.' : error.message);
+      },
+      async deleteLiquidacion(nivel, mes) {
+        chk(await sb.from('liquidaciones').delete().eq('ciclo_lectivo', CICLO).eq('nivel', nivel).eq('mes', mes));
       },
       async resetNivel() { throw new Error('Solo disponible en modo demo'); }
     };

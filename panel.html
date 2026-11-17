@@ -26,12 +26,14 @@
     <button data-v="alumnos" class="on">Alumnos <span class="cnt" id="c-alumnos"></span></button>
     <button data-v="inscripciones">Inscripciones <span class="cnt warn" id="c-pend"></span></button>
     <button data-v="resumen">Resumen por taller</button>
+    <button data-v="facturacion">Facturación <span class="cnt borr" id="c-cambios" title="Cambios programados para fin de mes"></span></button>
     <button data-v="historial">Historial</button>
   </nav>
   <div class="spacer"></div>
   <div class="acciones" id="acciones"></div>
 </div>
 
+<div class="banner-modo" id="banner-modo" hidden></div>
 <main id="main"></main>
 
 <!-- Modal genérico -->
@@ -41,8 +43,9 @@
 <div class="login" id="login" hidden>
   <div class="login-card">
     <div class="logo" style="color:var(--azul)">Talleres <span style="color:var(--rojo)" id="l-anio"></span></div>
-    <p>Ingresá con tu cuenta institucional <b>@sancarlos.edu.ar</b>.</p>
-    <button class="btn btn-primary" id="btn-login">Ingresar con Google</button>
+    <p>Ingresá con tu email. Te llega un link para entrar (solo para el equipo que gestiona talleres).</p>
+    <input class="input" id="login-email" type="email" placeholder="tu@sancarlos.edu.ar" autocomplete="email">
+    <button class="btn btn-primary" id="btn-login">Enviarme el link</button>
     <p class="login-err" id="login-err"></p>
   </div>
 </div>

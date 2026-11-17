@@ -12,8 +12,22 @@
     nivel: localStorage.getItem('talleres_nivel') || 'primaria',
     vista: 'alumnos',
     alumnos: [], asig: {}, inscripciones: [], historial: [],
-    q: '', fCurso: '', fEstado: '', fInscr: 'pendiente'
+    cambios: [], liquidaciones: [], precios: null,
+    q: '', fCurso: '', fEstado: '', fInscr: 'pendiente',
+    modoFin: false, mesSel: null
   };
+
+  // ---------- Meses ----------
+  const MESES_N = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const MESES = CFG.mesesFacturables.map(m => `${CFG.cicloLectivo}-${String(m).padStart(2, '0')}`);
+  const nomMes = m => m ? MESES_N[+m.slice(5) - 1] : '';
+  const NomMes = m => { const n = nomMes(m); return n.charAt(0).toUpperCase() + n.slice(1); };
+  const cerrado = m => S.liquidaciones.some(l => l.mes === m);
+  const mesAbierto = () => MESES.find(m => !cerrado(m)) || null;
+  const mesSiguiente = m => MESES[MESES.indexOf(m) + 1] || null;
+  // Los cambios "a fin de mes" se aplican al cerrar el mes abierto
+  const mesCambios = () => mesSiguiente(mesAbierto());
+  const cambioDe = (alId, d) => S.cambios.find(c => c.alumno_id === alId && c.dia === d);
   const N = () => CFG.niveles[S.nivel];
   const alumnoById = id => S.alumnos.find(a => a.id === id);
   const nombreAl = a => `${a.apellido}, ${a.nombre}`;
@@ -52,9 +66,11 @@
   async function cargar() {
     spin(true, 'Cargando ' + N().nombre + '…');
     try {
-      const [al, as, ins] = await Promise.all([
-        DB.listAlumnos(S.nivel), DB.listAsignaciones(S.nivel), DB.listInscripciones(S.nivel)
+      const [al, as, ins, cam, liq, pre] = await Promise.all([
+        DB.listAlumnos(S.nivel), DB.listAsignaciones(S.nivel), DB.listInscripciones(S.nivel),
+        DB.listCambios(S.nivel), DB.listLiquidaciones(S.nivel), DB.getPrecios(S.nivel)
       ]);
+      S.cambios = cam; S.liquidaciones = liq; S.precios = pre;
       S.alumnos = al.sort((a, b) => cursoIdx(a.curso) - cursoIdx(b.curso) || norm(nombreAl(a)).localeCompare(norm(nombreAl(b))));
       S.asig = {};
       as.forEach(x => { (S.asig[x.alumno_id] ||= {})[x.dia] = x; });
@@ -87,6 +103,7 @@
     $('#c-alumnos').textContent = S.alumnos.length || '';
     const p = S.inscripciones.filter(i => i.estado === 'pendiente').length;
     $('#c-pend').textContent = p || '';
+    $('#c-cambios').textContent = S.cambios.length || '';
   }
 
   function renderAcciones() {
@@ -94,11 +111,17 @@
     const a = $('#acciones');
     if (S.vista === 'alumnos') {
       a.innerHTML = `
+        <div class="modo" title="En «Fin de mes» los cambios quedan en borrador y se aplican al cerrar ${esc(nomMes(mesAbierto()))}">
+          <button class="${S.modoFin ? '' : 'on'}" data-m="0">Cambio inmediato</button>
+          <button class="${S.modoFin ? 'on fin' : ''}" data-m="1" ${mesCambios() ? '' : 'disabled'}>Fin de mes</button></div>
         <button class="btn btn-sm" id="a-import">⬆ Importar lista</button>
         <button class="btn btn-sm" id="a-add">＋ Alumno</button>
         <button class="btn btn-sm" id="a-exp1">⬇ Por alumno</button>
         <button class="btn btn-sm" id="a-exp2">⬇ Por taller</button>
         ${demo ? `<button class="btn btn-sm demo" id="a-demo">🎲 Datos de prueba</button><button class="btn btn-sm demo" id="a-reset">Reiniciar</button>` : ''}`;
+      a.querySelectorAll('.modo button').forEach(b => b.onclick = () => {
+        S.modoFin = b.dataset.m === '1'; renderAcciones(); renderBannerModo();
+      });
       $('#a-import').onclick = modalImportar;
       $('#a-add').onclick = () => modalAlumno();
       $('#a-exp1').onclick = exportarPorAlumno;
@@ -110,11 +133,18 @@
       $('#a-proc').onclick = procesarTodas;
       $('#a-expi').onclick = exportarInscripciones;
     } else a.innerHTML = '';
+    renderBannerModo();
+  }
+
+  function renderBannerModo() {
+    const b = $('#banner-modo'); if (!b) return;
+    b.hidden = !(S.vista === 'alumnos' && S.modoFin);
+    b.innerHTML = `<b>Modo fin de mes:</b> lo que cambies queda en borrador y se aplica al cerrar <b>${esc(nomMes(mesAbierto()))}</b> (rige desde ${esc(nomMes(mesCambios()))}). No afecta la facturación de ${esc(nomMes(mesAbierto()))}.`;
   }
 
   function render() {
     renderContadores(); renderAcciones();
-    ({ alumnos: vistaAlumnos, inscripciones: vistaInscripciones, resumen: vistaResumen, historial: vistaHistorial })[S.vista]();
+    ({ alumnos: vistaAlumnos, inscripciones: vistaInscripciones, resumen: vistaResumen, facturacion: vistaFacturacion, historial: vistaHistorial })[S.vista]();
   }
 
   // ============================================================
@@ -195,6 +225,17 @@
   }
 
   function pintarCelda(cell, a, d) {
+    pintarCeldaBase(cell, a, d);
+    const cam = cambioDe(a.id, d);
+    if (!cam) return;
+    const br = document.createElement('div');
+    br.className = 'borrador';
+    br.innerHTML = `<span title="Cambio programado${cam.usuario ? ' por ' + esc(cam.usuario) : ''}">Desde ${esc(nomMes(cam.mes_aplica).slice(0, 3))}: ${cam.taller_nuevo ? '→ ' + esc(cam.taller_nuevo) : 'se quita'}</span><button class="x" title="Cancelar cambio programado">×</button>`;
+    br.querySelector('.x').onclick = () => cancelarCambio(cam, a);
+    cell.appendChild(br);
+  }
+
+  function pintarCeldaBase(cell, a, d) {
     cell.innerHTML = '';
     const actual = (S.asig[a.id] || {})[d];
     const opts = window.talleresPosibles(S.nivel, a.curso, d);
@@ -229,6 +270,7 @@
   }
 
   async function asignar(cell, a, d, taller, anterior) {
+    if (S.modoFin) return programar(a, d, taller);
     cell.classList.add('loading');
     try {
       await DB.setAsignacion(a.id, d, taller, 'panel');
@@ -241,6 +283,7 @@
   }
 
   async function quitar(cell, a, d) {
+    if (S.modoFin) return programar(a, d, null);
     const prev = S.asig[a.id][d].taller;
     cell.classList.add('loading');
     try {
@@ -251,6 +294,36 @@
     } catch (e) { toast('Error: ' + e.message, 'error'); }
     cell.classList.remove('loading');
     refrescarFila(a);
+  }
+
+  // ---------- Cambios programados (borrador hasta fin de mes) ----------
+  async function programar(a, d, tallerNuevo) {
+    const mes = mesCambios();
+    if (!mes) { toast('No hay un mes siguiente para programar el cambio', 'error'); return; }
+    const actual = ((S.asig[a.id] || {})[d] || {}).taller || null;
+    const previo = cambioDe(a.id, d);
+    try {
+      if (previo) { await DB.updateCambio(previo.id, { estado: 'cancelado' }); S.cambios = S.cambios.filter(c => c !== previo); }
+      if ((tallerNuevo || null) === actual) {   // vuelve a quedar como está: no hace falta cambio
+        toast('Cambio programado cancelado', 'ok');
+      } else {
+        const c = await DB.addCambio({ nivel: S.nivel, alumno_id: a.id, dia: d, taller_anterior: actual, taller_nuevo: tallerNuevo, mes_aplica: mes });
+        S.cambios.push(c);
+        await DB.log({ nivel: S.nivel, alumno_id: a.id, alumno: nombreAl(a), accion: 'programar', dia: d, taller_anterior: actual, taller_nuevo: (tallerNuevo || 'quitar') + ' (desde ' + nomMes(mes) + ')' });
+        toast(`Programado para ${nomMes(mes)}: ${DIAS[d]} ${tallerNuevo ? '→ ' + tallerNuevo : 'se quita ' + actual}`, 'ok');
+      }
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+    refrescarFila(a);
+  }
+
+  async function cancelarCambio(c, a) {
+    try {
+      await DB.updateCambio(c.id, { estado: 'cancelado' });
+      S.cambios = S.cambios.filter(x => x.id !== c.id);
+      if (a) await DB.log({ nivel: S.nivel, alumno_id: a.id, alumno: nombreAl(a), accion: 'cancelar_programado', dia: c.dia, taller_nuevo: c.taller_nuevo });
+      toast('Cambio programado cancelado', 'ok');
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+    if (a) refrescarFila(a); else render();
   }
 
   function refrescarFila(a) {
@@ -371,6 +444,7 @@
   //  VISTA INSCRIPCIONES (lo que llega del formulario)
   // ============================================================
   function buscarAlumno(ins) {
+    if (ins.alumno_id && alumnoById(ins.alumno_id)) return { alumno: alumnoById(ins.alumno_id), tipo: 'exacto', elegido: true };
     const ape = norm(ins.apellido), nom = norm(ins.nombre), first = nom.split(' ')[0];
     const exact = S.alumnos.filter(a => norm(a.apellido) === ape && norm(a.nombre) === nom);
     const enCurso = exact.filter(a => a.curso === ins.curso);
@@ -417,7 +491,7 @@
     if (i.estado === 'pendiente') {
       const candidatos = S.alumnos.filter(a => a.curso === i.curso);
       if (m && !candidatos.includes(m.alumno)) candidatos.unshift(m.alumno);
-      const badge = m ? { exacto: '<span class="b ok">Coincide con la lista</span>', aproximado: '<span class="b warn">Coincidencia parcial</span>', otro_curso: `<span class="b warn">Está en ${esc(m.alumno.curso)}</span>` }[m.tipo]
+      const badge = m ? { exacto: m.elegido ? '<span class="b ok">Elegido/a de la lista</span>' : '<span class="b ok">Coincide con la lista</span>', aproximado: '<span class="b warn">Coincidencia parcial</span>', otro_curso: `<span class="b warn">Está en ${esc(m.alumno.curso)}</span>` }[m.tipo]
         : '<span class="b bad">No está en la lista</span>';
       accion = `<div class="ins-acc">${badge}
         <select class="input sel-al"><option value="">— Elegir alumno de la lista —</option>
@@ -521,10 +595,181 @@
   }
 
   // ============================================================
+  //  VISTA FACTURACIÓN (mensual)
+  //  Regla: escala por cantidad de talleres distintos (1 / 2 / 3+);
+  //  un taller que va 2 días cuenta 1. Los talleres "aparte" (ej. Fútbol)
+  //  se cobran por veces por semana, fuera de la escala.
+  // ============================================================
+  const fmt$ = n => '$ ' + Math.round(n || 0).toLocaleString('es-AR');
+  const preciosVacios = () => ({ t1: 0, t2: 0, t3: 0, aparte: Object.fromEntries((N().facturacion?.aparte || []).map(t => [t, { v1: 0, v2: 0 }])) });
+
+  function calcularFilas(precios) {
+    const P = precios || preciosVacios();
+    const aparte = N().facturacion?.aparte || [];
+    const filas = [];
+    S.alumnos.forEach(a => {
+      const asig = Object.values(S.asig[a.id] || {});
+      if (!asig.length) return;
+      const veces = {};
+      asig.forEach(x => veces[x.taller] = (veces[x.taller] || 0) + 1);
+      const normales = Object.keys(veces).filter(t => !aparte.includes(t));
+      const n = normales.length;
+      const montoEscala = n === 0 ? 0 : n === 1 ? +P.t1 : n === 2 ? +P.t2 : +P.t3;
+      let montoAparte = 0;
+      Object.keys(veces).filter(t => aparte.includes(t)).forEach(t => {
+        const pa = (P.aparte || {})[t] || { v1: 0, v2: 0 };
+        montoAparte += veces[t] >= 2 ? +pa.v2 : +pa.v1;
+      });
+      const detalle = Object.entries(veces).sort((x, y) => x[0].localeCompare(y[0]))
+        .map(([t, v]) => v > 1 ? `${t} x${v}` : t).join(', ');
+      filas.push({ alumno_id: a.id, curso: a.curso, apellido: a.apellido, nombre: a.nombre, detalle, cantidad: n,
+        aparte: Object.keys(veces).filter(t => aparte.includes(t)).map(t => `${t} ${veces[t]}x`).join(', '),
+        monto_escala: montoEscala, monto_aparte: montoAparte, total: montoEscala + montoAparte });
+    });
+    return filas.sort((p, q) => cursoIdx(p.curso) - cursoIdx(q.curso) || norm(p.apellido + p.nombre).localeCompare(norm(q.apellido + q.nombre)));
+  }
+
+  function vistaFacturacion() {
+    const abierto = mesAbierto();
+    if (!S.mesSel || !MESES.includes(S.mesSel)) S.mesSel = abierto || MESES[MESES.length - 1];
+    const m = S.mesSel;
+    const liq = S.liquidaciones.find(l => l.mes === m);
+    const esAbierto = m === abierto;
+    const P = S.precios || preciosVacios();
+    const aparte = N().facturacion?.aparte || [];
+    const filas = liq ? liq.filas : calcularFilas(P);
+    const total = filas.reduce((t, f) => t + f.total, 0);
+    const sinPrecio = !liq && !(+P.t1 || +P.t2 || +P.t3);
+    const prox = mesSiguiente(m);
+    const cambiosProx = esAbierto ? S.cambios : [];
+
+    const chips = MESES.map(x => {
+      const est = cerrado(x) ? 'cerrado' : x === abierto ? 'abierto' : 'futuro';
+      return `<button data-m="${x}" class="mes ${est} ${x === m ? 'on' : ''}" title="${est === 'cerrado' ? 'Cerrado' : est === 'abierto' ? 'Mes en curso' : 'Todavía no'}">${NomMes(x).slice(0, 3)}${est === 'cerrado' ? ' ✓' : ''}</button>`;
+    }).join('');
+
+    let cuerpo = '';
+    if (!liq && !esAbierto) {
+      cuerpo = `<div class="empty small">Primero hay que cerrar <b>${esc(nomMes(abierto))}</b>.</div>`;
+    } else {
+      cuerpo = `
+      <div class="fac-kpis">
+        <div class="kpi"><span>Estado</span><b>${liq ? 'Cerrado' : 'Borrador'}</b><small>${liq ? 'el ' + esc(new Date(liq.cerrada_at).toLocaleDateString('es-AR')) + (liq.usuario ? ' · ' + esc(liq.usuario) : '') : 'se actualiza con cada cambio'}</small></div>
+        <div class="kpi"><span>Alumnos a facturar</span><b>${filas.length}</b><small>de ${S.alumnos.length} en la lista</small></div>
+        <div class="kpi total"><span>Total ${esc(nomMes(m))}</span><b>${fmt$(total)}</b><small>${esc(N().nombre)}</small></div>
+      </div>
+      ${sinPrecio ? `<div class="aviso-fac">Cargá los precios de ${esc(N().nombre)} para calcular los montos.</div>` : ''}
+      <div class="fac-acc">
+        <button class="btn btn-sm" id="f-exp">⬇ Exportar ${liq ? '' : 'borrador '}${esc(nomMes(m))}</button>
+        ${esAbierto ? `<button class="btn btn-sm btn-red" id="f-cerrar">Cerrar ${esc(nomMes(m))}${cambiosProx.length ? ' y aplicar ' + cambiosProx.length + ' cambio' + (cambiosProx.length > 1 ? 's' : '') : ''}</button>` : ''}
+        ${liq && m === MESES.filter(cerrado).slice(-1)[0] ? `<button class="btn btn-sm" id="f-reabrir">Reabrir</button>` : ''}
+      </div>
+      ${esAbierto ? `<div class="fac-cambios"><h3>Cambios programados para ${esc(nomMes(prox) || '—')} <span>${cambiosProx.length ? cambiosProx.length + ' en borrador · se aplican al cerrar ' + esc(nomMes(m)) : 'ninguno'}</span></h3>
+        ${cambiosProx.length ? `<table class="tb"><thead><tr><th>Alumno</th><th>Curso</th><th>Día</th><th>Ahora</th><th>Desde ${esc(nomMes(prox))}</th><th>Cargado por</th><th></th></tr></thead><tbody>
+          ${cambiosProx.map(c => { const a = alumnoById(c.alumno_id); return a ? `<tr><td>${esc(nombreAl(a))}</td><td><span class="tag">${esc(a.curso)}</span></td><td>${DIAS[c.dia]}</td>
+            <td>${esc(((S.asig[a.id] || {})[c.dia] || {}).taller || '—')}</td><td><b>${c.taller_nuevo ? esc(c.taller_nuevo) : 'Se quita'}</b></td><td class="mono">${esc(c.usuario || '')}</td>
+            <td><button class="btn btn-sm c-cancel" data-id="${c.id}">Cancelar</button></td></tr>` : ''; }).join('')}</tbody></table>` :
+          `<p class="mini">Para cargar uno, en <b>Alumnos</b> activá «Fin de mes» y hacé el cambio.</p>`}</div>` : ''}
+      <div class="fac-tabla"><table class="tb"><thead><tr><th>Curso</th><th>Alumno</th><th>Talleres</th><th class="r">Cant.</th><th class="r">Escala</th>${aparte.length ? '<th class="r">' + esc(aparte.join(' / ')) + '</th>' : ''}<th class="r">Total</th></tr></thead><tbody>
+        ${filas.map(f => `<tr><td><span class="tag">${esc(f.curso)}</span></td><td>${esc(f.apellido)}, ${esc(f.nombre)}</td><td class="det">${esc(f.detalle)}</td>
+          <td class="r">${f.cantidad}</td><td class="r mono">${fmt$(f.monto_escala)}</td>${aparte.length ? `<td class="r mono">${f.monto_aparte ? fmt$(f.monto_aparte) : ''}</td>` : ''}<td class="r tot">${fmt$(f.total)}</td></tr>`).join('') ||
+          `<tr><td colspan="7" class="empty small">No hay alumnos con talleres.</td></tr>`}
+        </tbody><tfoot><tr><td colspan="${aparte.length ? 6 : 5}">Total ${esc(nomMes(m))}</td><td class="r tot">${fmt$(total)}</td></tr></tfoot></table></div>`;
+    }
+
+    const precios = `
+      <div class="precios ${liq ? 'ro' : ''}"><h3>Precios mensuales · ${esc(N().nombre)} ${liq ? '<span>(los usados al cerrar ' + esc(nomMes(m)) + ')</span>' : ''}</h3>
+        <div class="pgrid">
+          ${[['t1', '1 taller'], ['t2', '2 talleres'], ['t3', '3 o más']].map(([k, l]) =>
+            `<label>${l}<span class="money"><i>$</i><input type="number" min="0" step="100" data-k="${k}" value="${+((liq ? liq.precios : P)[k] || 0)}" ${liq ? 'disabled' : ''}></span></label>`).join('')}
+          ${aparte.map(t => [['v1', `${t} · 1 vez/sem`], ['v2', `${t} · 2 veces/sem`]].map(([k, l]) =>
+            `<label>${esc(l)}<span class="money"><i>$</i><input type="number" min="0" step="100" data-t="${esc(t)}" data-k="${k}" value="${+((((liq ? liq.precios : P).aparte || {})[t] || {})[k] || 0)}" ${liq ? 'disabled' : ''}></span></label>`).join('')).join('')}
+        </div>
+        ${liq ? '' : '<button class="btn btn-sm btn-primary" id="p-save">Guardar precios</button>'}
+      </div>`;
+
+    $('#main').innerHTML = `<div class="fac"><div class="meses">${chips}</div>${precios}${cuerpo}</div>`;
+
+    $('#main').querySelectorAll('.mes').forEach(b => b.onclick = () => { S.mesSel = b.dataset.m; vistaFacturacion(); });
+    $('#p-save')?.addEventListener('click', guardarPrecios);
+    $('#f-exp')?.addEventListener('click', () => exportarFacturacion(m, filas, liq ? liq.precios : P));
+    $('#f-cerrar')?.addEventListener('click', () => cerrarMes(m));
+    $('#f-reabrir')?.addEventListener('click', () => reabrirMes(m));
+    $('#main').querySelectorAll('.c-cancel').forEach(b => b.onclick = () => {
+      const c = S.cambios.find(x => x.id === b.dataset.id); cancelarCambio(c, alumnoById(c.alumno_id)).then(vistaFacturacion);
+    });
+  }
+
+  async function guardarPrecios() {
+    const p = preciosVacios();
+    $('#main').querySelectorAll('.precios input').forEach(i => {
+      const v = Math.max(0, +i.value || 0);
+      if (i.dataset.t) (p.aparte[i.dataset.t] ||= {})[i.dataset.k] = v; else p[i.dataset.k] = v;
+    });
+    try {
+      await DB.setPrecios(S.nivel, p); S.precios = p;
+      await DB.log({ nivel: S.nivel, accion: 'precios', taller_nuevo: `1: ${fmt$(p.t1)} · 2: ${fmt$(p.t2)} · 3+: ${fmt$(p.t3)}` });
+      toast('Precios guardados ✓', 'ok'); vistaFacturacion();
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+  }
+
+  async function cerrarMes(m) {
+    const P = S.precios || preciosVacios();
+    if (!(+P.t1 || +P.t2 || +P.t3)) { toast('Primero cargá y guardá los precios', 'error'); return; }
+    const filas = calcularFilas(P);
+    const total = filas.reduce((t, f) => t + f.total, 0);
+    const n = S.cambios.length;
+    if (!await confirmar(`Cerrar ${nomMes(m)}`,
+      `Se guarda la facturación de <b>${esc(nomMes(m))}</b> de ${esc(N().nombre)}: <b>${filas.length}</b> alumnos, total <b>${fmt$(total)}</b>.` +
+      (n ? `<br><br>Después se aplican los <b>${n}</b> cambios programados, que rigen desde ${esc(nomMes(mesSiguiente(m)))}.` : '') +
+      `<br><br>El mes cerrado ya no cambia aunque modifiques talleres.`, 'Cerrar mes')) return;
+    spin(true, 'Cerrando ' + nomMes(m) + '…');
+    try {
+      await DB.saveLiquidacion({ nivel: S.nivel, mes: m, precios: P, filas, total });
+      S.liquidaciones.push({ nivel: S.nivel, mes: m, precios: P, filas, total, cerrada_at: new Date().toISOString() });
+      await DB.log({ nivel: S.nivel, accion: 'cerrar_mes', taller_nuevo: `${NomMes(m)} · ${filas.length} alumnos · ${fmt$(total)}` });
+      let ok = 0;
+      for (const c of [...S.cambios]) {
+        const a = alumnoById(c.alumno_id);
+        if (a) {
+          if (c.taller_nuevo) await DB.setAsignacion(a.id, c.dia, c.taller_nuevo, 'panel'); else await DB.deleteAsignacion(a.id, c.dia);
+          await DB.log({ nivel: S.nivel, alumno_id: a.id, alumno: nombreAl(a), accion: 'aplicar_programado', dia: c.dia, taller_anterior: c.taller_anterior, taller_nuevo: c.taller_nuevo || null });
+          ok++;
+        }
+        await DB.updateCambio(c.id, { estado: 'aplicado', aplicado_at: new Date().toISOString() });
+      }
+      spin(false);
+      toast(`${NomMes(m)} cerrado${ok ? ` · ${ok} cambios aplicados` : ''}`, 'ok');
+      S.mesSel = m; S.modoFin = false;
+      exportarFacturacion(m, filas, P);
+    } catch (e) { spin(false); toast('Error: ' + e.message, 'error'); }
+    await cargar();
+  }
+
+  async function reabrirMes(m) {
+    if (!await confirmar(`Reabrir ${nomMes(m)}`, `Se borra la facturación guardada de ${esc(nomMes(m))} y vuelve a quedar en borrador con los talleres <b>actuales</b>. Los cambios programados que ya se aplicaron al cerrarlo <b>no</b> se deshacen.`, 'Reabrir')) return;
+    try {
+      await DB.deleteLiquidacion(S.nivel, m);
+      await DB.log({ nivel: S.nivel, accion: 'reabrir_mes', taller_nuevo: NomMes(m) });
+      toast(`${NomMes(m)} reabierto`, 'ok');
+    } catch (e) { toast('Error: ' + e.message, 'error'); }
+    await cargar();
+  }
+
+  function exportarFacturacion(m, filas, P) {
+    const aparte = N().facturacion?.aparte || [];
+    const rows = [['Mes', 'Nivel', 'Curso', 'Apellido', 'Nombre', 'Talleres', 'Cantidad (escala)', ...(aparte.length ? [aparte.join(' / ')] : []), 'Monto escala', ...(aparte.length ? ['Monto ' + aparte.join(' / ')] : []), 'Total']];
+    filas.forEach(f => rows.push([NomMes(m) + ' ' + m.slice(0, 4), N().nombre, f.curso, f.apellido, f.nombre, f.detalle, f.cantidad, ...(aparte.length ? [f.aparte] : []), f.monto_escala, ...(aparte.length ? [f.monto_aparte] : []), f.total]));
+    rows.push([]);
+    rows.push(['', '', '', '', '', '', '', ...(aparte.length ? ['', ''] : []), 'TOTAL', filas.reduce((t, f) => t + f.total, 0)]);
+    CSV.download(`facturacion_talleres_${S.nivel}_${m}${cerrado(m) ? '' : '_borrador'}.csv`, rows);
+  }
+
+  // ============================================================
   //  VISTA HISTORIAL
   // ============================================================
   function vistaHistorial() {
-    const lbl = { asignar: 'Asignó', cambiar: 'Cambió', eliminar: 'Quitó', vincular: 'Vinculó inscripción', alta_alumno: 'Agregó alumno', baja_alumno: 'Quitó alumno', importar_lista: 'Importó lista' };
+    const lbl = { asignar: 'Asignó', cambiar: 'Cambió', eliminar: 'Quitó', vincular: 'Vinculó inscripción', alta_alumno: 'Agregó alumno', baja_alumno: 'Quitó alumno', importar_lista: 'Importó lista', programar: 'Programó cambio', cancelar_programado: 'Canceló programado', aplicar_programado: 'Aplicó programado', cerrar_mes: 'Cerró mes', reabrir_mes: 'Reabrió mes', precios: 'Cambió precios' };
     $('#main').innerHTML = !S.historial.length ? `<div class="empty small">Sin movimientos todavía.</div>` :
       `<div class="hist"><table><thead><tr><th>Fecha</th><th>Acción</th><th>Alumno</th><th>Día</th><th>Detalle</th><th>Usuario</th></tr></thead><tbody>
       ${S.historial.map(h => `<tr><td class="mono">${esc(new Date(h.created_at).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' }))}</td>
@@ -582,14 +827,21 @@
     const u = await DB.getUser();
     if (!u) {
       spin(false); $('#login').hidden = false;
-      $('#btn-login').onclick = () => DB.signIn();
+      $('#btn-login').onclick = async () => {
+        const email = $('#login-email').value.trim();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { $('#login-err').textContent = 'Escribí un email válido.'; return; }
+        $('#btn-login').disabled = true;
+        try { await DB.signIn(email); $('#login-err').style.color = 'var(--azul)'; $('#login-err').textContent = `Listo: revisá ${email} y abrí el link.`; }
+        catch (e) { $('#login-err').textContent = e.message; $('#btn-login').disabled = false; }
+      };
       return;
     }
     if (DB.modo !== 'demo') {
-      if (!/@sancarlos\.edu\.ar$/i.test(u.email || '')) {
+      if (!await DB.esStaff()) {
         spin(false); $('#login').hidden = false;
-        $('#login-err').textContent = `La cuenta ${u.email} no tiene acceso.`;
-        $('#btn-login').textContent = 'Usar otra cuenta'; $('#btn-login').onclick = () => DB.signOut();
+        $('#login-email').hidden = true;
+        $('#login-err').textContent = `${u.email} no está habilitado para el panel.`;
+        $('#btn-login').textContent = 'Usar otro email'; $('#btn-login').onclick = () => DB.signOut();
         return;
       }
       $('#user').textContent = u.email; $('#salir').hidden = false; $('#salir').onclick = () => DB.signOut();

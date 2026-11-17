@@ -22,6 +22,23 @@ supabase/schema.sql    ← tablas + seguridad
 data/*.csv             ← listas de prueba
 ```
 
+## Formularios
+La familia elige el curso y busca al alumno/a por apellido (mínimo 3 letras, hasta 10 resultados: no se puede bajar la lista completa). Si no aparece, puede cargarlo a mano y queda para revisar.
+
+## Facturación mensual
+- Precios por nivel: 1 taller / 2 talleres / 3 o más. Un taller que va 2 días cuenta 1.
+- Talleres que se cobran aparte (Primaria: Fútbol) por 1 o 2 veces por semana (`facturacion.aparte` en `config/talleres.js`).
+- El mes abierto es un **borrador** que se actualiza solo. **Cerrar mes** guarda la foto (no cambia más), descarga el CSV para Administración y aplica los cambios programados.
+
+## Cambios a fin de mes
+En **Alumnos**, el interruptor «Fin de mes» hace que cada cambio quede en borrador (recuadro rojo punteado en la grilla) sin tocar la facturación del mes en curso. Se aplican al cerrar el mes; se pueden cancelar desde la grilla o desde Facturación.
+
+## Acceso al panel
+Link por email, solo para los emails cargados en la tabla `staff`:
+```sql
+insert into public.staff (email) values ('alguien@sancarlos.edu.ar');
+```
+
 ## Flujo
 1. **Panel → Alumnos → Importar lista**: CSV o pegado desde Sheets con columnas `curso, apellido, nombre`.
 2. Las familias completan el formulario del nivel.
@@ -37,8 +54,8 @@ Abrir `/panel` → «Datos de prueba» (carga la lista random + inscripciones si
 
 ## Publicar
 1. **Supabase**: proyecto nuevo → SQL Editor → pegar `supabase/schema.sql` → Run.
-2. **Login**: Authentication → Providers → Google (Client ID/Secret de Google Cloud). En URL Configuration agregar la URL de Vercel.
-3. Completar `js/supabase-config.js` con Project URL y anon key (Settings → API). La anon key es pública por diseño: la seguridad la dan las políticas RLS (el público solo puede *insertar* inscripciones; el panel exige cuenta `@sancarlos.edu.ar`).
+2. **Login**: Authentication → URL Configuration → Site URL y Redirect URLs = `https://talleres2027.vercel.app/panel`. Cargar los emails del equipo en `staff`.
+3. Completar `js/supabase-config.js` con Project URL y anon key (Settings → API). La anon key es pública por diseño: la seguridad la dan las políticas RLS (el público solo puede *insertar* inscripciones; el panel exige un email de la tabla `staff`).
 4. Subir a GitHub e importar el repo en Vercel (Framework: *Other*, sin build).
 
 ## Para 2028
